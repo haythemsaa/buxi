@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\IssueController;
 use App\Http\Controllers\Api\LoyaltyController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\PaymentReminderController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\PromotionController;
 use App\Http\Controllers\Api\ReservationController as ApiReservationController;
@@ -79,4 +80,9 @@ Route::prefix('v1')->middleware(['auth:sanctum', \App\Http\Middleware\EnsureTena
     Route::get('/loyalty/balance', [LoyaltyController::class, 'balance']);
     Route::get('/loyalty/history', [LoyaltyController::class, 'history']);
     Route::get('/loyalty/info', [LoyaltyController::class, 'info']);
+
+    // Payment Reminders
+    Route::get('/payment-reminders', [PaymentReminderController::class, 'index']);
+    Route::get('/payment-reminders/{id}', [PaymentReminderController::class, 'show']);
+    Route::post('/payment-reminders/{id}/acknowledge', [PaymentReminderController::class, 'acknowledge']);
 });

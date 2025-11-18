@@ -111,6 +111,11 @@ class Customer extends Model
         return $this->hasMany(LoyaltyTransaction::class);
     }
 
+    public function paymentReminders(): HasMany
+    {
+        return $this->hasMany(PaymentReminder::class);
+    }
+
     // Scopes
     public function scopeIndividual($query)
     {

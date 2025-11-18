@@ -67,6 +67,24 @@ Boxibox est une plateforme SaaS complète de gestion de self-storage développé
 - Tableau comparatif détaillé
 - Interface responsive
 
+#### 📧 Système de Rappels de Paiement (3 Phases)
+- **Phase 1 - Rappel Amical** (7 jours après échéance)
+  - Message courtois
+  - Pas de pénalité
+  - Envoi par email
+- **Phase 2 - Rappel Ferme** (15 jours après échéance)
+  - Ton plus ferme
+  - Pénalités de retard : 5%
+  - Délai de 7 jours pour régulariser
+- **Phase 3 - Mise en Demeure** (30 jours après échéance)
+  - Procédure formelle
+  - Pénalités de retard : 10%
+  - Menace de suspension et poursuites
+- Automatisation via commande artisan (`php artisan reminders:process`)
+- Tracking complet des rappels (envoyé, accusé réception, payé)
+- Statistiques en temps réel
+- API mobile pour consultation par les clients
+
 ### Phase 2 (Planned)
 - 💳 Intégration Stripe pour paiements en ligne
 - 🌍 Support multi-langues (FR, EN, DE, ES, IT)
@@ -130,6 +148,27 @@ npm run dev
 
 L'application sera accessible à : `http://localhost:8000`
 
+## ⚙️ Commandes Utiles
+
+### Rappels de Paiement Automatiques
+
+```bash
+# Traiter les rappels de paiement (en heures ouvrées)
+php artisan reminders:process
+
+# Forcer l'envoi même hors heures ouvrées
+php artisan reminders:process --force
+
+# Mode simulation (sans envoi réel)
+php artisan reminders:process --dry-run
+```
+
+**Automatisation recommandée** :
+Ajouter au crontab pour exécution quotidienne :
+```
+0 10 * * * cd /path/to/boxibox && php artisan reminders:process
+```
+
 ## 📱 API Mobile
 
 L'API REST est documentée dans `/boxibox/API_MOBILE.md`
@@ -154,6 +193,11 @@ L'API REST est documentée dans `/boxibox/API_MOBILE.md`
 - `GET /api/v1/loyalty/balance` - Solde de points
 - `GET /api/v1/loyalty/history` - Historique
 - `GET /api/v1/loyalty/info` - Informations du programme
+
+#### Rappels de Paiement
+- `GET /api/v1/payment-reminders` - Liste des rappels
+- `GET /api/v1/payment-reminders/{id}` - Détails d'un rappel
+- `POST /api/v1/payment-reminders/{id}/acknowledge` - Accuser réception
 
 ## 🗄️ Données de Test
 
@@ -231,6 +275,7 @@ routes/
 - `Contract` : Contrats de location
 - `Invoice` : Factures
 - `Payment` : Paiements
+- `PaymentReminder` : Rappels de paiement (3 phases)
 - `Reservation` : Réservations
 - `Promotion` : Promotions et codes promo
 - `LoyaltyPoint` : Solde de points de fidélité
