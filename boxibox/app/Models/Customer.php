@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Sanctum\HasApiTokens;
 
 class Customer extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasApiTokens;
 
     protected $fillable = [
         'tenant_id',
@@ -25,7 +26,9 @@ class Customer extends Model
         'siret',
         'vat_number',
         'email',
+        'password',
         'phone',
+        'phone_secondary',
         'mobile',
         'address',
         'city',
@@ -47,6 +50,11 @@ class Customer extends Model
         'acquisition_source',
         'is_vip',
         'internal_notes',
+        'status',
+    ];
+
+    protected $hidden = [
+        'password',
     ];
 
     protected $casts = [
@@ -54,6 +62,7 @@ class Customer extends Model
         'tags' => 'array',
         'is_vip' => 'boolean',
         'birth_date' => 'date',
+        'password' => 'hashed',
     ];
 
     // Relations
