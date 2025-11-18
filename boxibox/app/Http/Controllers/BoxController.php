@@ -2,63 +2,85 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Box;
+use App\Models\Site;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class BoxController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request): Response
     {
-        //
+        $tenantId = 1; // TODO: Get from authenticated user's tenant
+
+        $query = Box::with([
+            'floor.building.site',
+            'currentContract'
+        ])->whereHas('floor.building.site', function ($q) use ($tenantId) {
+            $q->where('tenant_id', $tenantId);
+        });
+
+        // Apply filters
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where('number', 'like', "%{$search}%");
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        if ($request->filled('site_id')) {
+            $query->whereHas('floor.building.site', function ($q) use ($request) {
+                $q->where('id', $request->input('site_id'));
+            });
+        }
+
+        $boxes = $query->orderBy('number')->paginate(15);
+
+        $sites = Site::where('tenant_id', $tenantId)->get();
+
+        return Inertia::render('Boxes/Index', [
+            'boxes' => $boxes,
+            'sites' => $sites,
+            'filters' => $request->only(['search', 'status', 'site_id']),
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): Response
     {
-        //
+        return Inertia::render('Boxes/Create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        // TODO: Implement box creation
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Box $box): Response
     {
-        //
+        $box->load(['floor.building.site', 'currentContract.customer']);
+
+        return Inertia::render('Boxes/Show', [
+            'box' => $box,
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(Box $box): Response
     {
-        //
+        return Inertia::render('Boxes/Edit', [
+            'box' => $box,
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Box $box)
     {
-        //
+        // TODO: Implement box update
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Box $box)
     {
-        //
+        // TODO: Implement box deletion
     }
 }
