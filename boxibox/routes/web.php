@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PlanController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\BoxController;
 use App\Http\Controllers\CustomerController;
@@ -17,6 +18,9 @@ Route::get('/', function () {
 Route::middleware(['auth'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Plan view
+    Route::get('/plan', [PlanController::class, 'index'])->name('plan.index');
 
     // Sites management
     Route::resource('sites', SiteController::class);
