@@ -811,16 +811,316 @@ Authorization: Bearer {token}
 
 ---
 
+## 📦 Réservations
+
+### Rechercher des boxes disponibles
+
+**POST** `/boxes/search` (Public)
+
+**Body:**
+```json
+{
+  "site_id": 1,
+  "min_volume": 5,
+  "max_volume": 15,
+  "climate_controlled": true,
+  "ground_floor": false,
+  "duration_months": 6
+}
+```
+
+**Response 200:**
+```json
+{
+  "boxes": [
+    {
+      "id": 1,
+      "number": "A-101",
+      "volume": 12.5,
+      "surface": 10,
+      "dimensions": "2.5x2x2.5m",
+      "site": {
+        "id": 1,
+        "name": "Paris Nord",
+        "address": "123 rue de Paris",
+        "city": "Paris"
+      },
+      "features": {
+        "climate_controlled": true,
+        "ground_floor": false,
+        "vehicle_access": true,
+        "has_electricity": true
+      },
+      "pricing": {
+        "monthly_price_ht": 85.00,
+        "total_monthly_ttc": 102.00,
+        "first_payment": 187.00
+      }
+    }
+  ]
+}
+```
+
+### Calculer le prix d'une réservation
+
+**POST** `/boxes/calculate-price` (Public)
+
+**Body:**
+```json
+{
+  "box_id": 1,
+  "duration_months": 12,
+  "promo_code": "BIENVENUE30",
+  "insurance": true
+}
+```
+
+**Response 200:**
+```json
+{
+  "pricing": {
+    "monthly_price_ht": 85.00,
+    "base_price_ht": 100.00,
+    "discount_amount": 30.00,
+    "insurance_monthly": 25.00,
+    "tax_rate": 20.00,
+    "total_monthly_ttc": 132.00,
+    "deposit_amount": 85.00,
+    "first_payment": 217.00
+  },
+  "promotion": {
+    "code": "BIENVENUE30",
+    "name": "Bienvenue 30%",
+    "description": "30% de réduction sur le premier mois"
+  }
+}
+```
+
+### Créer une réservation
+
+**POST** `/reservations`
+
+**Body:**
+```json
+{
+  "box_id": 1,
+  "start_date": "2025-12-01",
+  "duration_months": 6,
+  "promo_code": "BIENVENUE30",
+  "insurance": true,
+  "notes": "Je souhaite emménager le week-end"
+}
+```
+
+**Response 201:**
+```json
+{
+  "message": "Réservation créée avec succès",
+  "reservation": {
+    "id": 1,
+    "reservation_number": "RES-ABC123",
+    "box_number": "A-101",
+    "site_name": "Paris Nord",
+    "start_date": "2025-12-01",
+    "duration_months": 6,
+    "first_payment": 217.00,
+    "monthly_price_ttc": 132.00,
+    "expires_at": "2025-12-31T23:59:59",
+    "status": "pending"
+  }
+}
+```
+
+### Lister mes réservations
+
+**GET** `/reservations`
+
+**Response 200:**
+```json
+{
+  "reservations": [
+    {
+      "id": 1,
+      "reservation_number": "RES-ABC123",
+      "box_number": "A-101",
+      "site_name": "Paris Nord",
+      "start_date": "2025-12-01",
+      "duration_months": 6,
+      "monthly_price_ht": 85.00,
+      "total_monthly_ttc": 132.00,
+      "status": "pending",
+      "expires_at": "2025-12-31T23:59:59",
+      "created_at": "2025-11-18T10:00:00"
+    }
+  ]
+}
+```
+
+### Annuler une réservation
+
+**POST** `/reservations/{id}/cancel`
+
+**Response 200:**
+```json
+{
+  "message": "Réservation annulée avec succès"
+}
+```
+
+---
+
+## 🎁 Promotions
+
+### Liste des promotions actives
+
+**GET** `/promotions` (Public)
+
+**Response 200:**
+```json
+{
+  "promotions": [
+    {
+      "id": 1,
+      "code": "BIENVENUE30",
+      "name": "Bienvenue 30%",
+      "description": "30% de réduction sur le premier mois",
+      "discount_type": "percentage",
+      "discount_value": 30.00,
+      "valid_from": "2025-11-01",
+      "valid_until": "2026-05-01",
+      "online_only": true,
+      "new_customers_only": true
+    }
+  ]
+}
+```
+
+### Valider un code promo
+
+**POST** `/promotions/validate`
+
+**Body:**
+```json
+{
+  "code": "BIENVENUE30"
+}
+```
+
+**Response 200:**
+```json
+{
+  "valid": true,
+  "promotion": {
+    "code": "BIENVENUE30",
+    "name": "Bienvenue 30%",
+    "description": "30% de réduction sur le premier mois",
+    "discount_type": "percentage",
+    "discount_value": 30.00
+  }
+}
+```
+
+---
+
+## 🌟 Programme de Fidélité
+
+### Mon solde de points
+
+**GET** `/loyalty/balance`
+
+**Response 200:**
+```json
+{
+  "loyalty": {
+    "points": 1250,
+    "points_earned": 1500,
+    "points_spent": 250,
+    "tier": "silver",
+    "tier_label": "Argent",
+    "tier_discount": 5,
+    "points_to_next_tier": 3750
+  }
+}
+```
+
+### Historique des points
+
+**GET** `/loyalty/history`
+
+**Response 200:**
+```json
+{
+  "transactions": [
+    {
+      "id": 1,
+      "type": "earned",
+      "type_label": "Gagné",
+      "points": 100,
+      "description": "Nouveau contrat CT000001",
+      "expires_at": "2026-11-18",
+      "created_at": "2025-11-18T10:00:00"
+    }
+  ]
+}
+```
+
+### Informations sur le programme
+
+**GET** `/loyalty/info`
+
+**Response 200:**
+```json
+{
+  "program": {
+    "name": "Boxibox Loyalty",
+    "currency": "points",
+    "tiers": [
+      {
+        "name": "Bronze",
+        "min_points": 0,
+        "max_points": 999,
+        "discount": 0,
+        "benefits": ["Points sur chaque paiement", "Offres exclusives"]
+      },
+      {
+        "name": "Argent",
+        "min_points": 1000,
+        "max_points": 4999,
+        "discount": 5,
+        "benefits": [
+          "Tous les avantages Bronze",
+          "-5% sur les options",
+          "Priorité support client"
+        ]
+      }
+    ],
+    "earning_rules": {
+      "Nouveau contrat": 100,
+      "Par mois de location": 10,
+      "Parrainage réussi": 50
+    },
+    "redemption": {
+      "1000 points": "10€ de réduction",
+      "2500 points": "30€ de réduction"
+    }
+  }
+}
+```
+
+---
+
 ## 🚀 Fonctionnalités futures
 
 - [x] Génération et téléchargement de factures en PDF
 - [x] Notifications push
 - [x] Demande de résiliation de contrat
 - [x] Signalement de problème/incident
+- [x] Réservation en ligne
+- [x] Système de promotions
+- [x] Programme de fidélité
 - [ ] Paiement en ligne
 - [ ] Upload de documents
 - [ ] Historique des accès au box
-- [ ] Réservation de box supplémentaire
 - [ ] Chat support en temps réel
 
 ---

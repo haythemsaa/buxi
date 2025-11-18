@@ -4,8 +4,11 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ContractController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\IssueController;
+use App\Http\Controllers\Api\LoyaltyController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\PromotionController;
+use App\Http\Controllers\Api\ReservationController as ApiReservationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,6 +24,13 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
     // Authentication
     Route::post('/login', [AuthController::class, 'login']);
+
+    // Promotions publiques
+    Route::get('/promotions', [PromotionController::class, 'index']);
+
+    // Recherche de boxes
+    Route::post('/boxes/search', [ApiReservationController::class, 'search']);
+    Route::post('/boxes/calculate-price', [ApiReservationController::class, 'calculatePrice']);
 });
 
 // Protected routes (require authentication)
@@ -55,4 +65,18 @@ Route::prefix('v1')->middleware(['auth:sanctum', \App\Http\Middleware\EnsureTena
     Route::post('/notifications/unregister-token', [NotificationController::class, 'unregisterToken']);
     Route::get('/notifications/tokens', [NotificationController::class, 'getTokens']);
     Route::put('/notifications/preferences', [NotificationController::class, 'updatePreferences']);
+
+    // Reservations
+    Route::get('/reservations', [ApiReservationController::class, 'index']);
+    Route::get('/reservations/{id}', [ApiReservationController::class, 'show']);
+    Route::post('/reservations', [ApiReservationController::class, 'store']);
+    Route::post('/reservations/{id}/cancel', [ApiReservationController::class, 'cancel']);
+
+    // Promotions
+    Route::post('/promotions/validate', [PromotionController::class, 'validate']);
+
+    // Loyalty Points
+    Route::get('/loyalty/balance', [LoyaltyController::class, 'balance']);
+    Route::get('/loyalty/history', [LoyaltyController::class, 'history']);
+    Route::get('/loyalty/info', [LoyaltyController::class, 'info']);
 });
