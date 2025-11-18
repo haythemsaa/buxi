@@ -1,45 +1,27 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\PlanController;
-use App\Http\Controllers\SiteController;
-use App\Http\Controllers\BoxController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\ContractController;
-use App\Http\Controllers\InvoiceController;
 use Inertia\Inertia;
 
-// Public routes
 Route::get('/', function () {
-    return Inertia::render('Welcome');
-})->name('home');
-
-// Authenticated routes
-Route::middleware(['auth'])->group(function () {
-    // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-    // Plan view
-    Route::get('/plan', [PlanController::class, 'index'])->name('plan.index');
-
-    // Sites management
-    Route::resource('sites', SiteController::class);
-
-    // Boxes management
-    Route::resource('boxes', BoxController::class);
-    Route::get('/sites/{site}/boxes', [BoxController::class, 'bySite'])->name('boxes.bySite');
-
-    // Customers management
-    Route::resource('customers', CustomerController::class);
-
-    // Contracts management
-    Route::resource('contracts', ContractController::class);
-    Route::post('/contracts/{contract}/terminate', [ContractController::class, 'terminate'])->name('contracts.terminate');
-    Route::post('/contracts/{contract}/suspend', [ContractController::class, 'suspend'])->name('contracts.suspend');
-    Route::post('/contracts/{contract}/reactivate', [ContractController::class, 'reactivate'])->name('contracts.reactivate');
-
-    // Invoices management
-    Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
-    Route::get('/invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
 });
+
+Route::get('/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';
