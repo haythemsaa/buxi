@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\CalculatePriceRequest;
+use App\Http\Requests\Api\SearchBoxesRequest;
+use App\Http\Requests\Api\StoreReservationRequest;
 use App\Models\Box;
 use App\Models\Reservation;
 use App\Services\PriceCalculatorService;
@@ -20,7 +23,7 @@ class ReservationController extends Controller
     /**
      * Rechercher des boxes disponibles
      */
-    public function search(Request $request)
+    public function search(SearchBoxesRequest $request)
     {
         $query = Box::query()
             ->with(['floor.building.site'])
@@ -81,14 +84,9 @@ class ReservationController extends Controller
     /**
      * Calculer le prix pour une réservation
      */
-    public function calculatePrice(Request $request)
+    public function calculatePrice(CalculatePriceRequest $request)
     {
-        $validated = $request->validate([
-            'box_id' => 'required|exists:boxes,id',
-            'duration_months' => 'required|integer|min:1',
-            'promo_code' => 'nullable|string',
-            'insurance' => 'nullable|boolean',
-        ]);
+        $validated = $request->validated();
 
         $box = Box::findOrFail($validated['box_id']);
         $promotion = null;
@@ -126,16 +124,9 @@ class ReservationController extends Controller
     /**
      * Créer une réservation depuis l'app mobile
      */
-    public function store(Request $request)
+    public function store(StoreReservationRequest $request)
     {
-        $validated = $request->validate([
-            'box_id' => 'required|exists:boxes,id',
-            'start_date' => 'required|date|after_or_equal:today',
-            'duration_months' => 'required|integer|min:1',
-            'promo_code' => 'nullable|string',
-            'insurance' => 'nullable|boolean',
-            'notes' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $customer = $request->user();
         $box = Box::findOrFail($validated['box_id']);

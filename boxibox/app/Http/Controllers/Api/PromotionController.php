@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\ValidatePromoCodeRequest;
 use App\Models\Promotion;
-use Illuminate\Http\Request;
 
 class PromotionController extends Controller
 {
@@ -39,13 +39,11 @@ class PromotionController extends Controller
     /**
      * Valider un code promo
      */
-    public function validate(Request $request)
+    public function validate(ValidatePromoCodeRequest $request)
     {
-        $validated = $request->validate([
-            'code' => 'required|string',
-        ]);
+        $validated = $request->validated();
 
-        $promotion = Promotion::where('code', strtoupper($validated['code']))
+        $promotion = Promotion::where('code', $validated['code'])
             ->active()
             ->first();
 
