@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\PaymentReminderAcknowledged;
 use App\Http\Controllers\Controller;
 use App\Models\PaymentReminder;
 use Illuminate\Http\Request;
@@ -96,6 +97,9 @@ class PaymentReminderController extends Controller
             ->findOrFail($id);
 
         $reminder->markAsAcknowledged();
+
+        // Dispatch event
+        event(new PaymentReminderAcknowledged($reminder));
 
         return response()->json([
             'message' => 'Rappel accusé réception',

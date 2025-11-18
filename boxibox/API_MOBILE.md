@@ -1109,6 +1109,202 @@ Authorization: Bearer {token}
 
 ---
 
+## 💳 Rappels de Paiement
+
+### Lister mes rappels de paiement
+
+**GET** `/payment-reminders`
+
+Liste tous les rappels de paiement pour les factures impayées du client.
+
+**Headers:**
+```
+Authorization: Bearer {token}
+```
+
+**Response 200:**
+```json
+{
+  "reminders": [
+    {
+      "id": 1,
+      "invoice_number": "INV-2024-001",
+      "phase": "phase_1",
+      "phase_name": "Premier rappel amical",
+      "severity": "low",
+      "days_overdue": 10,
+      "amount_due": 125.50,
+      "late_fee": 0.00,
+      "total_amount": 125.50,
+      "status": "sent",
+      "status_label": "Envoyé",
+      "sent_at": "2025-11-18T10:00:00.000000Z",
+      "acknowledged_at": null,
+      "paid_at": null,
+      "contract_number": "CO00000001",
+      "box_number": "A-101",
+      "created_at": "2025-11-18T09:00:00.000000Z"
+    },
+    {
+      "id": 2,
+      "invoice_number": "INV-2024-002",
+      "phase": "phase_2",
+      "phase_name": "Rappel ferme",
+      "severity": "medium",
+      "days_overdue": 18,
+      "amount_due": 125.50,
+      "late_fee": 6.28,
+      "total_amount": 131.78,
+      "status": "sent",
+      "status_label": "Envoyé",
+      "sent_at": "2025-11-17T10:00:00.000000Z",
+      "acknowledged_at": "2025-11-17T14:30:00.000000Z",
+      "paid_at": null,
+      "contract_number": "CO00000002",
+      "box_number": "B-205",
+      "created_at": "2025-11-17T09:00:00.000000Z"
+    }
+  ]
+}
+```
+
+**Phases disponibles:**
+- `phase_1` (7+ jours) : Premier rappel amical - 0% de pénalité
+- `phase_2` (15+ jours) : Rappel ferme - 5% de pénalité
+- `phase_3` (30+ jours) : Mise en demeure - 10% de pénalité
+
+**Status disponibles:**
+- `pending` : En attente d'envoi
+- `sent` : Envoyé
+- `acknowledged` : Accusé réception
+- `paid` : Payé
+- `cancelled` : Annulé
+
+---
+
+### Obtenir les détails d'un rappel
+
+**GET** `/payment-reminders/{id}`
+
+Récupère les détails complets d'un rappel de paiement.
+
+**Headers:**
+```
+Authorization: Bearer {token}
+```
+
+**Response 200:**
+```json
+{
+  "reminder": {
+    "id": 1,
+    "phase": "phase_1",
+    "phase_name": "Premier rappel amical",
+    "severity": "low",
+    "days_overdue": 10,
+    "amount_due": 125.50,
+    "late_fee": 0.00,
+    "total_amount": 125.50,
+    "status": "sent",
+    "status_label": "Envoyé",
+    "sent_at": "2025-11-18T10:00:00.000000Z",
+    "acknowledged_at": null,
+    "paid_at": null,
+    "message": "Cher client, nous vous informons qu'un montant de 125,50 € reste dû pour votre facture INV-2024-001...",
+    "sent_via": ["email"],
+    "created_at": "2025-11-18T09:00:00.000000Z",
+    "updated_at": "2025-11-18T10:00:00.000000Z",
+    "invoice": {
+      "id": 1,
+      "invoice_number": "INV-2024-001",
+      "issue_date": "2024-01-01",
+      "due_date": "2024-01-15",
+      "total_ttc": 125.50,
+      "paid_amount": 0.00,
+      "remaining_amount": 125.50,
+      "status": "overdue"
+    },
+    "contract": {
+      "id": 1,
+      "contract_number": "CO00000001",
+      "box_number": "A-101",
+      "site_name": "Boxibox Paris Nord"
+    }
+  }
+}
+```
+
+**Response 404:**
+```json
+{
+  "message": "Rappel de paiement non trouvé"
+}
+```
+
+---
+
+### Accuser réception d'un rappel
+
+**POST** `/payment-reminders/{id}/acknowledge`
+
+Marque un rappel de paiement comme "pris en compte" par le client.
+
+**Headers:**
+```
+Authorization: Bearer {token}
+```
+
+**Response 200:**
+```json
+{
+  "message": "Rappel accusé réception",
+  "reminder": {
+    "id": 1,
+    "status": "acknowledged",
+    "acknowledged_at": "2025-11-18T14:30:00.000000Z"
+  }
+}
+```
+
+**Response 400:**
+```json
+{
+  "message": "Ce rappel a déjà été accusé réception ou payé"
+}
+```
+
+---
+
+### Système de rappel automatique
+
+Le système de rappels de paiement fonctionne en 3 phases progressives :
+
+#### Phase 1 - Premier rappel amical (7 jours après échéance)
+- **Ton** : Courtois et amical
+- **Pénalité** : 0%
+- **Action** : Email de rappel simple
+- **Délai** : Pas de délai spécifique
+
+#### Phase 2 - Rappel ferme (15 jours après échéance)
+- **Ton** : Ferme et professionnel
+- **Pénalité** : 5% du montant dû
+- **Action** : Email plus formel avec pénalités
+- **Délai** : 7 jours pour régulariser
+
+#### Phase 3 - Mise en demeure (30 jours après échéance)
+- **Ton** : Formel et légal
+- **Pénalité** : 10% du montant dû
+- **Action** : Mise en demeure officielle
+- **Conséquence** : Menace de suspension d'accès et poursuites légales
+
+**Automatisation** :
+- Les rappels sont traités automatiquement chaque jour à 10h00 (heure de Paris)
+- Les pénalités sont calculées automatiquement selon la phase
+- Les rappels sont envoyés par email
+- Le statut est mis à jour automatiquement lors du paiement
+
+---
+
 ## 🚀 Fonctionnalités futures
 
 - [x] Génération et téléchargement de factures en PDF

@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Events\PaymentReminderPaid;
+use App\Events\PaymentReminderSent;
 use App\Models\Invoice;
 use App\Models\PaymentReminder;
 use App\Notifications\PaymentReminderNotification;
@@ -134,6 +136,9 @@ class PaymentReminderService
             // Marquer comme envoyé
             $reminder->markAsSent(['email']);
 
+            // Dispatch event
+            event(new PaymentReminderSent($reminder));
+
             Log::info('Payment reminder sent', [
                 'reminder_id' => $reminder->id,
                 'invoice_id' => $reminder->invoice_id,
@@ -202,12 +207,19 @@ class PaymentReminderService
      */
     public function markInvoiceRemindersAsPaid(Invoice $invoice): void
     {
-        PaymentReminder::where('invoice_id', $invoice->id)
+        $reminders = PaymentReminder::where('invoice_id', $invoice->id)
             ->whereIn('status', ['pending', 'sent', 'acknowledged'])
-            ->update([
+            ->get();
+
+        foreach ($reminders as $reminder) {
+            $reminder->update([
                 'status' => 'paid',
                 'paid_at' => now(),
             ]);
+
+            // Dispatch event
+            event(new PaymentReminderPaid($reminder));
+        }
     }
 
     /**
