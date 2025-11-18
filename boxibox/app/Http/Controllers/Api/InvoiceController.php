@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Invoice;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Spatie\Multitenancy\Models\Tenant;
 
 class InvoiceController extends Controller
 {
@@ -112,15 +115,40 @@ class InvoiceController extends Controller
      *
      * @param Request $request
      * @param int $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\Response
      */
     public function download(Request $request, $id)
     {
-        // TODO: Implement PDF generation
-        return response()->json([
-            'message' => 'Téléchargement de facture PDF - À implémenter',
-            'invoice_id' => $id,
+        $customer = $request->user();
+
+        // Récupérer la facture du client
+        $invoice = Invoice::whereHas('contract', function ($query) use ($customer) {
+            $query->where('customer_id', $customer->id);
+        })
+        ->with([
+            'contract.customer',
+            'contract.box.floor.building.site',
+            'payments'
+        ])
+        ->find($id);
+
+        if (!$invoice) {
+            return response()->json([
+                'message' => 'Facture non trouvée',
+            ], 404);
+        }
+
+        // Récupérer les informations du tenant
+        $tenant = Tenant::current();
+
+        // Générer le PDF
+        $pdf = Pdf::loadView('invoices.pdf', [
+            'invoice' => $invoice,
+            'tenant' => $tenant,
         ]);
+
+        // Retourner le PDF en tant que téléchargement
+        return $pdf->download('facture-' . $invoice->invoice_number . '.pdf');
     }
 
     /**

@@ -560,12 +560,263 @@ const getContracts = async () => {
 
 ---
 
+## 📢 Signalements (Issues)
+
+### Lister les signalements
+
+**GET** `/issues`
+
+Liste tous les signalements du client.
+
+**Headers:**
+```
+Authorization: Bearer {token}
+```
+
+**Response 200:**
+```json
+{
+  "issues": [
+    {
+      "id": 1,
+      "issue_number": "ISS-ABC123",
+      "type": "maintenance",
+      "type_label": "Maintenance",
+      "subject": "Problème avec la serrure",
+      "priority": "high",
+      "priority_label": "Haute",
+      "status": "open",
+      "status_label": "Ouvert",
+      "created_at": "2025-11-18T10:00:00.000000Z",
+      "resolved_at": null
+    }
+  ]
+}
+```
+
+### Obtenir les détails d'un signalement
+
+**GET** `/issues/{id}`
+
+**Response 200:**
+```json
+{
+  "issue": {
+    "id": 1,
+    "issue_number": "ISS-ABC123",
+    "type": "maintenance",
+    "type_label": "Maintenance",
+    "subject": "Problème avec la serrure",
+    "description": "La serrure de mon box ne fonctionne plus correctement...",
+    "priority": "high",
+    "priority_label": "Haute",
+    "status": "open",
+    "status_label": "Ouvert",
+    "resolution_notes": null,
+    "resolved_at": null,
+    "created_at": "2025-11-18T10:00:00.000000Z",
+    "updated_at": "2025-11-18T10:00:00.000000Z",
+    "contract": {
+      "id": 1,
+      "contract_number": "CT000001"
+    }
+  }
+}
+```
+
+### Créer un signalement
+
+**POST** `/issues`
+
+**Body:**
+```json
+{
+  "contract_id": 1,
+  "type": "maintenance",
+  "subject": "Problème avec la serrure",
+  "description": "La serrure de mon box ne fonctionne plus correctement depuis ce matin",
+  "priority": "high"
+}
+```
+
+**Types disponibles:** `access`, `maintenance`, `billing`, `security`, `other`
+**Priorités disponibles:** `low`, `medium`, `high`, `urgent`
+
+**Response 201:**
+```json
+{
+  "message": "Signalement créé avec succès",
+  "issue": {
+    "id": 1,
+    "issue_number": "ISS-ABC123",
+    "type": "maintenance",
+    "subject": "Problème avec la serrure",
+    "status": "open",
+    "created_at": "2025-11-18T10:00:00.000000Z"
+  }
+}
+```
+
+---
+
+## 🔚 Résiliation de contrat
+
+### Demander la résiliation d'un contrat
+
+**POST** `/contracts/{id}/request-termination`
+
+**Body:**
+```json
+{
+  "requested_termination_date": "2026-01-31",
+  "reason": "Je déménage dans une autre ville et n'ai plus besoin de ce box"
+}
+```
+
+**Response 201:**
+```json
+{
+  "message": "Demande de résiliation envoyée avec succès",
+  "termination_request": {
+    "id": 1,
+    "contract_number": "CT000001",
+    "requested_termination_date": "2026-01-31",
+    "status": "pending",
+    "status_label": "En attente",
+    "created_at": "2025-11-18T10:00:00.000000Z"
+  }
+}
+```
+
+### Lister les demandes de résiliation
+
+**GET** `/contracts/termination-requests`
+
+**Response 200:**
+```json
+{
+  "termination_requests": [
+    {
+      "id": 1,
+      "contract_number": "CT000001",
+      "requested_termination_date": "2026-01-31",
+      "approved_termination_date": null,
+      "status": "pending",
+      "status_label": "En attente",
+      "reason": "Je déménage...",
+      "admin_notes": null,
+      "created_at": "2025-11-18T10:00:00.000000Z",
+      "processed_at": null
+    }
+  ]
+}
+```
+
+---
+
+## 🔔 Notifications Push
+
+### Enregistrer un token de notification
+
+**POST** `/notifications/register-token`
+
+**Body:**
+```json
+{
+  "token": "fcm_device_token_here",
+  "platform": "ios",
+  "device_name": "iPhone 14 Pro"
+}
+```
+
+**Plateformes:** `ios`, `android`
+
+**Response 201:**
+```json
+{
+  "message": "Token enregistré avec succès",
+  "token": {
+    "id": 1,
+    "platform": "ios",
+    "device_name": "iPhone 14 Pro",
+    "last_used_at": "2025-11-18T10:00:00.000000Z",
+    "created_at": "2025-11-18T10:00:00.000000Z"
+  }
+}
+```
+
+### Désenregistrer un token
+
+**POST** `/notifications/unregister-token`
+
+**Body:**
+```json
+{
+  "token": "fcm_device_token_here"
+}
+```
+
+**Response 200:**
+```json
+{
+  "message": "Token désactivé avec succès"
+}
+```
+
+### Lister les tokens enregistrés
+
+**GET** `/notifications/tokens`
+
+**Response 200:**
+```json
+{
+  "tokens": [
+    {
+      "id": 1,
+      "platform": "ios",
+      "device_name": "iPhone 14 Pro",
+      "last_used_at": "2025-11-18T10:00:00.000000Z",
+      "created_at": "2025-11-18T10:00:00.000000Z"
+    }
+  ]
+}
+```
+
+### Mettre à jour les préférences de notifications
+
+**PUT** `/notifications/preferences`
+
+**Body:**
+```json
+{
+  "invoice_notifications": true,
+  "payment_reminders": true,
+  "contract_notifications": true,
+  "promotional_notifications": false
+}
+```
+
+**Response 200:**
+```json
+{
+  "message": "Préférences de notifications mises à jour",
+  "preferences": {
+    "invoice_notifications": true,
+    "payment_reminders": true,
+    "contract_notifications": true,
+    "promotional_notifications": false
+  }
+}
+```
+
+---
+
 ## 🚀 Fonctionnalités futures
 
-- [ ] Génération et téléchargement de factures en PDF
-- [ ] Notifications push
-- [ ] Demande de résiliation de contrat
-- [ ] Signalement de problème/incident
+- [x] Génération et téléchargement de factures en PDF
+- [x] Notifications push
+- [x] Demande de résiliation de contrat
+- [x] Signalement de problème/incident
 - [ ] Paiement en ligne
 - [ ] Upload de documents
 - [ ] Historique des accès au box

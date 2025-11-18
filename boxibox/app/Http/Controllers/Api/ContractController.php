@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\ContractTerminationRequest;
 use Illuminate\Http\Request;
 
 class ContractController extends Controller
@@ -151,5 +152,97 @@ class ContractController extends Controller
         ];
 
         return $labels[$method] ?? $method;
+    }
+
+    /**
+     * Request contract termination
+     *
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function requestTermination(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'requested_termination_date' => 'required|date|after:today',
+            'reason' => 'required|string|min:10',
+        ]);
+
+        $customer = $request->user();
+
+        // Verify contract belongs to customer
+        $contract = $customer->contracts()->findOrFail($id);
+
+        // Check if contract is already terminated
+        if ($contract->status === 'terminated') {
+            return response()->json([
+                'message' => 'Ce contrat est déjà résilié',
+            ], 422);
+        }
+
+        // Check if there's already a pending request
+        $existingRequest = ContractTerminationRequest::where('contract_id', $id)
+            ->where('status', 'pending')
+            ->first();
+
+        if ($existingRequest) {
+            return response()->json([
+                'message' => 'Une demande de résiliation est déjà en cours pour ce contrat',
+            ], 422);
+        }
+
+        // Create termination request
+        $terminationRequest = ContractTerminationRequest::create([
+            'contract_id' => $id,
+            'customer_id' => $customer->id,
+            'requested_termination_date' => $validated['requested_termination_date'],
+            'reason' => $validated['reason'],
+        ]);
+
+        return response()->json([
+            'message' => 'Demande de résiliation envoyée avec succès',
+            'termination_request' => [
+                'id' => $terminationRequest->id,
+                'contract_number' => $contract->contract_number,
+                'requested_termination_date' => $terminationRequest->requested_termination_date,
+                'status' => $terminationRequest->status,
+                'status_label' => $terminationRequest->status_label,
+                'created_at' => $terminationRequest->created_at,
+            ],
+        ], 201);
+    }
+
+    /**
+     * Get termination requests for customer's contracts
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function terminationRequests(Request $request)
+    {
+        $customer = $request->user();
+
+        $requests = ContractTerminationRequest::where('customer_id', $customer->id)
+            ->with('contract')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($req) {
+                return [
+                    'id' => $req->id,
+                    'contract_number' => $req->contract->contract_number,
+                    'requested_termination_date' => $req->requested_termination_date,
+                    'approved_termination_date' => $req->approved_termination_date,
+                    'status' => $req->status,
+                    'status_label' => $req->status_label,
+                    'reason' => $req->reason,
+                    'admin_notes' => $req->admin_notes,
+                    'created_at' => $req->created_at,
+                    'processed_at' => $req->processed_at,
+                ];
+            });
+
+        return response()->json([
+            'termination_requests' => $requests,
+        ]);
     }
 }
