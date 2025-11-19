@@ -34,4 +34,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Customer Portal Routes
+require __DIR__.'/customer.php';
+
+// Admin Revenue Management Routes
+require __DIR__.'/admin_revenue.php';
+
 require __DIR__.'/auth.php';

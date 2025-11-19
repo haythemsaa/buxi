@@ -22,6 +22,16 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->statefulApi();
+
+        // Register middleware aliases
+        $middleware->alias([
+            'customer' => \App\Http\Middleware\EnsureUserIsCustomer::class,
+        ]);
+
+        // Exclude webhooks from CSRF verification
+        $middleware->validateCsrfTokens(except: [
+            'webhooks/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
