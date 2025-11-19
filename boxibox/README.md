@@ -1,330 +1,416 @@
-# Boxibox - Self-Storage Management Platform
+# 🏢 Boxibox - Plateforme SaaS de Gestion de Self-Stockage
 
-Boxibox est une plateforme SaaS complète de gestion de self-storage développée avec Laravel 11 et Vue.js 3.
+[![Laravel](https://img.shields.io/badge/Laravel-12.0-FF2D20?style=for-the-badge&logo=laravel)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?style=for-the-badge&logo=php)](https://php.net)
+[![Vue.js](https://img.shields.io/badge/Vue.js-3.0-4FC08D?style=for-the-badge&logo=vue.js)](https://vuejs.org)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-## 🚀 Fonctionnalités
+Application SaaS complète pour la gestion de sites de self-stockage en France, avec interface d'administration web et API mobile.
 
-### Core Features
-- 🏢 **Multi-tenancy** : Architecture multi-tenant isolée avec Spatie Laravel Multitenancy
-- 🔐 **Authentification** : Laravel Sanctum pour API mobile + Laravel Breeze pour admin web
-- 📱 **API Mobile** : API REST complète pour application mobile (iOS/Android)
-- 💳 **Gestion des paiements** : Facturation automatique, prélèvements, historique
-- 📊 **Dashboard** : Interface d'administration complète avec Inertia.js
+## 📋 Table des Matières
 
-### Advanced Features (Phase 1 - Completed)
+- [Démarrage Rapide](#-démarrage-rapide-5-minutes)
+- [Fonctionnalités](#-fonctionnalités)
+- [Prérequis](#-prérequis)
+- [Installation Détaillée](#-installation-détaillée)
+- [Configuration](#-configuration)
+- [Utilisation](#-utilisation)
+- [API Mobile](#-api-mobile)
+- [Tests](#-tests)
+- [Déploiement](#-déploiement)
+- [Architecture](#-architecture)
 
-#### 🎫 Système de Réservation
-- Recherche de boxes avec filtres avancés (volume, localisation, équipements)
-- Réservation avec ou sans compte (guest reservations)
-- Validité 30 jours avec conversion automatique en contrat
-- Calcul dynamique des prix avec application des promotions
-- Interface web et API mobile
+---
 
-#### 💰 Moteur de Promotions
-- 4 types de réductions :
-  - Pourcentage (ex: -30%)
-  - Montant fixe (ex: -50€)
-  - Premier mois gratuit
-  - X mois gratuits
-- Conditions d'éligibilité flexibles :
-  - Durée minimale
-  - Sites applicables
-  - Types de boxes
-  - Nouveaux clients uniquement
-  - En ligne uniquement
-- Empilable ou exclusif
-- Priorités configurables
-- Auto-application possible
+## 🚀 Démarrage Rapide (5 minutes)
 
-#### 🎁 Programme de Fidélité
-- 4 paliers (Bronze, Argent, Or, Platine)
-- Réductions automatiques selon le palier (0%, 5%, 10%, 15%)
-- Gains de points :
-  - 100 points à la signature
-  - 10 points par mois de paiement
-  - 50 points par parrainage
-  - Bonus spéciaux
-- Dépense de points pour réductions
-- Expiration après 12 mois
-- Historique des transactions
-
-#### 📐 Calcul de Prix Dynamique
-- Réductions selon la durée :
-  - 3-5 mois : -2%
-  - 6-11 mois : -5%
-  - 12+ mois : -10%
-- Ajustement selon l'occupation :
-  - Faible (<60%) : -5%
-  - Élevée (>90%) : +5%
-- Application de promotions
-- Assurance optionnelle
-- Dépôt de garantie
-- Calcul taxes (TVA 20%)
-
-#### 🔍 Comparateur de Boxes
-- Comparaison jusqu'à 5 boxes simultanément
-- Scoring intelligent (prix, volume, emplacement)
-- Tableau comparatif détaillé
-- Interface responsive
-
-#### 📧 Système de Rappels de Paiement (3 Phases)
-- **Phase 1 - Rappel Amical** (7 jours après échéance)
-  - Message courtois
-  - Pas de pénalité
-  - Envoi par email
-- **Phase 2 - Rappel Ferme** (15 jours après échéance)
-  - Ton plus ferme
-  - Pénalités de retard : 5%
-  - Délai de 7 jours pour régulariser
-- **Phase 3 - Mise en Demeure** (30 jours après échéance)
-  - Procédure formelle
-  - Pénalités de retard : 10%
-  - Menace de suspension et poursuites
-- Automatisation via commande artisan (`php artisan reminders:process`)
-- Tracking complet des rappels (envoyé, accusé réception, payé)
-- Statistiques en temps réel
-- API mobile pour consultation par les clients
-
-### Phase 2 (Planned)
-- 💳 Intégration Stripe pour paiements en ligne
-- 🌍 Support multi-langues (FR, EN, DE, ES, IT)
-- 💬 Chat en direct avec support IA
-- 🏗️ Visites virtuelles 3D/VR
-
-## 📋 Prérequis
-
-- PHP 8.4+
-- Composer
-- Node.js 18+ & NPM
-- MySQL 8.0+ ou PostgreSQL 14+
-- Redis (optionnel, recommandé pour les sessions)
-
-## 🛠️ Installation
+### Installation Automatique
 
 ```bash
 # Cloner le repository
-git clone <repository-url>
+git clone <repository-url> boxibox
 cd boxibox
 
-# Installer les dépendances PHP
+# Exécuter le script d'installation
+chmod +x install.sh
+./install.sh
+
+# Lancer le serveur de développement
+php artisan serve
+```
+
+🎉 **C'est tout !** L'application est accessible sur http://localhost:8000
+
+### 🔑 Accès par Défaut
+
+**Admin Web:**
+- URL: http://localhost:8000
+- Email: `admin@boxibox.com`
+- Password: `password`
+
+**Client Test:**
+- Email: `client@example.com`
+- Password: `password`
+
+**API Mobile:**
+- Base URL: http://localhost:8000/api/v1
+- Documentation: Voir `API_MOBILE.md`
+
+---
+
+## ✨ Fonctionnalités
+
+### 🎯 Core Business
+
+#### Gestion des Sites
+- ✅ Multi-tenancy (bases de données séparées par site)
+- ✅ Gestion complète des sites avec GPS
+- ✅ Bâtiments, étages et boxes
+- ✅ Statuts en temps réel (disponible, loué, maintenance)
+
+#### Réservations en Ligne
+- ✅ Recherche de boxes avec filtres avancés
+- ✅ Comparateur de boxes (jusqu'à 5)
+- ✅ Calculateur de prix dynamique
+- ✅ Réservations invités (sans compte)
+- ✅ Expiration automatique (30 jours)
+
+#### Contrats
+- ✅ Génération automatique de contrats
+- ✅ Codes d'accès uniques
+- ✅ Gestion des échéances
+- ✅ Demandes de résiliation
+- ✅ Renouvellement automatique
+
+#### Facturation
+- ✅ Génération automatique mensuelle
+- ✅ Prélèvement SEPA
+- ✅ Génération PDF
+- ✅ Historique complet
+- ✅ Paiements partiels
+
+#### Rappels de Paiement (3 Phases)
+- ✅ **Phase 1** (7j) : Rappel amical - 0% pénalité
+- ✅ **Phase 2** (15j) : Rappel ferme - 5% pénalité
+- ✅ **Phase 3** (30j) : Mise en demeure - 10% pénalité
+- ✅ Envoi automatique quotidien
+- ✅ Notifications email personnalisées
+
+#### Programme de Fidélité
+- ✅ 4 paliers (Bronze, Argent, Or, Platine)
+- ✅ Points sur chaque action
+- ✅ Réductions progressives (0%, 5%, 10%, 15%)
+- ✅ Expiration automatique (12 mois)
+- ✅ Historique détaillé
+
+#### Promotions
+- ✅ 4 types de réductions
+- ✅ Codes promo
+- ✅ Conditions multiples
+- ✅ Application automatique
+
+### 📱 API Mobile
+
+- ✅ 40+ endpoints REST
+- ✅ Laravel Sanctum
+- ✅ Réponses standardisées
+- ✅ Notifications push (FCM/APNS)
+
+### 🔧 Administration
+
+- ✅ 32 vues Inertia.js + Vue 3
+- ✅ Dashboard avec statistiques
+- ✅ CRUD complets
+- ✅ Recherche et filtres
+
+### 🤖 Automation
+
+- ✅ Génération factures mensuelles
+- ✅ Rappels paiement quotidiens
+- ✅ Rappels renouvellement
+- ✅ Nettoyage réservations expirées
+- ✅ Expiration points fidélité
+
+---
+
+## 💻 Prérequis
+
+- **PHP** : 8.4+
+- **Composer** : 2.8+
+- **Node.js** : 18+ et npm
+- **Base de données** : MySQL 8.0+ ou PostgreSQL 14+
+- **Redis** : 6.0+ (recommandé)
+
+---
+
+## 📦 Installation Détaillée
+
+### 1. Dépendances
+
+```bash
 composer install
-
-# Installer les dépendances JavaScript
 npm install
+```
 
-# Copier le fichier d'environnement
+### 2. Configuration
+
+```bash
 cp .env.example .env
-
-# Générer la clé d'application
 php artisan key:generate
+```
 
-# Configurer la base de données dans .env
-# DB_CONNECTION=mysql
-# DB_HOST=127.0.0.1
-# DB_PORT=3306
-# DB_DATABASE=boxibox
-# DB_USERNAME=root
-# DB_PASSWORD=
+### 3. Base de Données
 
-# Exécuter les migrations
-php artisan migrate
+#### MySQL
+```sql
+CREATE DATABASE boxibox CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
 
-# Peupler la base de données avec des données de test
-php artisan db:seed
+```env
+DB_CONNECTION=mysql
+DB_DATABASE=boxibox
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-# Compiler les assets
+#### SQLite (Dev)
+```bash
+touch database/database.sqlite
+```
+
+```env
+DB_CONNECTION=sqlite
+```
+
+### 4. Migrations & Seeders
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+### 5. Assets
+
+```bash
 npm run build
 ```
 
-## 🚀 Démarrage
+### 6. Storage
 
 ```bash
-# Démarrer le serveur de développement Laravel
+php artisan storage:link
+chmod -R 775 storage bootstrap/cache
+```
+
+### 7. Lancement
+
+```bash
 php artisan serve
-
-# Dans un autre terminal, compiler les assets en mode watch
-npm run dev
 ```
 
-L'application sera accessible à : `http://localhost:8000`
+---
 
-## ⚙️ Commandes Utiles
+## ⚙️ Configuration
 
-### Rappels de Paiement Automatiques
+### Variables Essentielles
+
+```env
+APP_NAME=Boxibox
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+APP_TIMEZONE=Europe/Paris
+APP_LOCALE=fr
+
+CACHE_DRIVER=redis
+SESSION_DRIVER=redis
+QUEUE_CONNECTION=redis
+
+MAIL_MAILER=log
+```
+
+---
+
+## 🎮 Utilisation
+
+### 🛠️ Scripts Utilitaires
+
+Des scripts bash sont fournis pour faciliter les tâches courantes :
 
 ```bash
-# Traiter les rappels de paiement (en heures ouvrées)
+# Démarrer le serveur de développement
+./scripts/dev.sh          # Par défaut sur le port 8000
+./scripts/dev.sh 8080     # Spécifier un port personnalisé
+
+# Lancer les tests
+./scripts/test.sh                    # Tous les tests
+./scripts/test.sh --filter=Auth      # Filtrer par nom
+./scripts/test.sh --coverage         # Avec couverture de code
+./scripts/test.sh --parallel         # En parallèle
+
+# Réinitialiser la base de données
+./scripts/reset.sh        # Avec données de démo
+./scripts/reset.sh none   # Sans données
+
+# Installation fraîche complète
+./scripts/fresh.sh        # Réinstalle tout depuis zéro
+
+# Optimiser pour la production
+./scripts/optimize.sh     # Cache configs, routes, views
+
+# Consulter les logs
+./scripts/logs.sh                # Dernières 50 lignes
+./scripts/logs.sh -f             # Suivre en temps réel
+./scripts/logs.sh --error        # Uniquement les erreurs
+./scripts/logs.sh -n 100         # Dernières 100 lignes
+
+# Lancer le worker de queue
+./scripts/queue.sh               # Queue par défaut
+./scripts/queue.sh high          # Queue haute priorité
+
+# Sauvegarder la base de données
+./scripts/backup.sh              # Crée un backup horodaté
+```
+
+### Commandes Artisan
+
+```bash
+# Rappels de paiement
 php artisan reminders:process
-
-# Forcer l'envoi même hors heures ouvrées
-php artisan reminders:process --force
-
-# Mode simulation (sans envoi réel)
 php artisan reminders:process --dry-run
+
+# Réservations
+php artisan reservations:cleanup
+
+# Factures
+php artisan invoices:generate-monthly
+php artisan invoices:generate-monthly --month=2025-12
+
+# Fidélité
+php artisan loyalty:process-expiry --dry-run
+
+# Renouvellement
+php artisan contracts:send-renewal-reminders
 ```
 
-**Automatisation recommandée** :
-Ajouter au crontab pour exécution quotidienne :
+### Scheduler (Cron)
+
+```bash
+* * * * * cd /path/to/boxibox && php artisan schedule:run >> /dev/null 2>&1
 ```
-0 10 * * * cd /path/to/boxibox && php artisan reminders:process
+
+### Queue Workers
+
+```bash
+php artisan queue:work
+php artisan queue:work --tries=3 --timeout=60
 ```
+
+---
 
 ## 📱 API Mobile
 
-L'API REST est documentée dans `/boxibox/API_MOBILE.md`
+### Quick Start
 
-### Endpoints principaux
+```bash
+# Login
+curl -X POST http://localhost:8000/api/v1/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"client@example.com","password":"password"}'
 
-#### Authentification
-- `POST /api/v1/login` - Connexion
-
-#### Réservations
-- `POST /api/v1/boxes/search` - Rechercher des boxes
-- `POST /api/v1/boxes/calculate-price` - Calculer un prix
-- `POST /api/v1/reservations` - Créer une réservation
-- `GET /api/v1/reservations` - Liste des réservations
-- `POST /api/v1/reservations/{id}/cancel` - Annuler
-
-#### Promotions
-- `GET /api/v1/promotions` - Liste publique
-- `POST /api/v1/promotions/validate` - Valider un code
-
-#### Fidélité
-- `GET /api/v1/loyalty/balance` - Solde de points
-- `GET /api/v1/loyalty/history` - Historique
-- `GET /api/v1/loyalty/info` - Informations du programme
-
-#### Rappels de Paiement
-- `GET /api/v1/payment-reminders` - Liste des rappels
-- `GET /api/v1/payment-reminders/{id}` - Détails d'un rappel
-- `POST /api/v1/payment-reminders/{id}/acknowledge` - Accuser réception
-
-## 🗄️ Données de Test
-
-Après avoir exécuté `php artisan db:seed`, vous aurez accès à :
-
-### Compte Admin
-- Email : `admin@boxibox.com`
-- Mot de passe : `password`
-
-### Clients
-- 50 clients avec email : `prenom.nom@example.com`
-- Mot de passe : `password123`
-
-### Promotions
-- `BIENVENUE30` : 30% pour nouveaux clients
-- `ETE2025` : 2 mois gratuits pour 12 mois
-- `ONLINE15` : 15% auto-appliqué
-- `LONGDUR50` : 50€ pour 12 mois
-- `1ERMOIS` : Premier mois offert
-
-### Sites
-- 1 site : Boxibox Paris Nord
-- 2 bâtiments (A intérieur, B extérieur)
-- ~64 boxes de différentes tailles
-
-## 🏗️ Architecture
-
-### Backend
-- **Framework** : Laravel 11
-- **Database** : MySQL avec Eloquent ORM
-- **API** : RESTful avec Laravel Sanctum
-- **Multi-tenancy** : Spatie Laravel Multitenancy
-- **PDF** : DomPDF pour factures
-
-### Frontend
-- **Framework** : Vue.js 3
-- **UI** : Inertia.js + Tailwind CSS
-- **Authentification** : Laravel Breeze
-
-### Structure des Dossiers
-```
-app/
-├── Http/
-│   ├── Controllers/
-│   │   ├── Api/           # Contrôleurs API mobile
-│   │   └── Web/           # Contrôleurs admin web
-│   ├── Middleware/        # Middlewares (tenant, auth, etc.)
-│   └── Requests/          # Form Requests pour validation
-├── Models/                # Modèles Eloquent
-├── Services/              # Services métier
-└── Policies/              # Policies d'autorisation
-
-database/
-├── migrations/            # Migrations de schéma
-└── seeders/               # Seeders de données
-
-resources/
-├── js/
-│   ├── Pages/             # Vues Inertia
-│   └── Layouts/           # Layouts Vue
-└── views/                 # Vues Blade
-
-routes/
-├── api.php                # Routes API mobile
-└── web.php                # Routes admin web
+# Utiliser le token
+curl -X GET http://localhost:8000/api/v1/contracts \
+  -H "Authorization: Bearer {token}"
 ```
 
-## 📝 Modèles Principaux
+### 📮 Collection Postman
 
-- `Site` : Sites de stockage (multi-tenant)
-- `Building` : Bâtiments d'un site
-- `Floor` : Étages d'un bâtiment
-- `Box` : Boxes de stockage
-- `Customer` : Clients
-- `Contract` : Contrats de location
-- `Invoice` : Factures
-- `Payment` : Paiements
-- `PaymentReminder` : Rappels de paiement (3 phases)
-- `Reservation` : Réservations
-- `Promotion` : Promotions et codes promo
-- `LoyaltyPoint` : Solde de points de fidélité
-- `LoyaltyTransaction` : Transactions de points
-- `PriceRule` : Règles de tarification dynamique
+Une collection Postman complète est disponible dans `postman/` :
+- Import en 1 clic dans Postman
+- Tous les endpoints avec exemples
+- Variables d'environnement préconfigurées
+- Tests automatisés
 
-## 🔒 Sécurité
+Voir `postman/README.md` pour les instructions.
 
-- Policies pour autorisation fine
-- Form Requests pour validation côté serveur
-- CSRF protection
-- XSS protection via Blade/Vue
-- SQL injection prevention via Eloquent
-- Password hashing avec bcrypt
+### 📚 Ressources
+
+- **Documentation API complète**: Voir `API_MOBILE.md`
+- **Guide d'intégration**: Voir `INTEGRATION.md` (exemples React, Vue, Swift, Kotlin)
+- **Collection Postman**: Voir `postman/README.md`
+
+---
 
 ## 🧪 Tests
 
 ```bash
-# Exécuter les tests
 php artisan test
-
-# Avec coverage
-php artisan test --coverage
+php artisan test --filter=AuthenticationTest
 ```
-
-## 📊 Analyse Concurrentielle
-
-L'analyse détaillée des concurrents est disponible dans `/boxibox/ANALYSE_CONCURRENTS.md`
-
-**Positionnement** : Boxibox combine toutes les fonctionnalités des leaders (Shurgard, Homebox, Une Pièce en Plus) + innovations uniques (programme fidélité, comparateur intelligent).
-
-## 🤝 Contribution
-
-1. Fork le projet
-2. Créer une branche (`git checkout -b feature/AmazingFeature`)
-3. Commit les changements (`git commit -m 'Add AmazingFeature'`)
-4. Push vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrir une Pull Request
-
-## 📄 Licence
-
-Ce projet est propriétaire. Tous droits réservés.
-
-## 📞 Support
-
-Pour toute question ou support :
-- Email : support@boxibox.com
-- Documentation : `/boxibox/API_MOBILE.md`
 
 ---
 
-Développé avec ❤️ par l'équipe Boxibox
+## 🚢 Déploiement
+
+Voir `DEPLOYMENT.md` pour le guide complet.
+
+```bash
+php artisan down
+git pull
+composer install --no-dev
+npm run build
+php artisan migrate --force
+php artisan config:cache
+php artisan up
+```
+
+---
+
+## 🏗️ Architecture
+
+### Stack
+- Laravel 12, PHP 8.4
+- Vue.js 3, Inertia.js
+- MySQL/PostgreSQL
+- Redis
+- DomPDF
+
+### Structure
+```
+app/
+├── Console/Commands/      # 5 commandes
+├── Events/                # 3 événements
+├── Helpers/               # 20+ helpers
+├── Http/
+│   ├── Controllers/       # 29 contrôleurs
+│   ├── Requests/          # 11 requests
+│   └── Resources/         # 6 resources
+├── Jobs/                  # 5 jobs
+├── Notifications/         # 5 notifications
+├── Policies/              # 7 policies
+└── Services/              # Services métier
+
+database/
+├── factories/             # 13 factories
+├── migrations/            # 20+ migrations
+└── seeders/               # 7 seeders
+
+resources/js/Pages/        # 32 vues
+```
+
+---
+
+## 📚 Documentation
+
+- `API_MOBILE.md` - Documentation API
+- `DEPLOYMENT.md` - Guide déploiement
+- `ANALYSE_CONCURRENTS.md` - Analyse marché
+
+---
+
+## 📄 License
+
+MIT License
+
+---
+
+**🚀 Prêt à Démarrer ? Lancez `./install.sh` !**
