@@ -41,6 +41,12 @@ const showingNavigationDropdown = ref(false);
                                     Dashboard
                                 </NavLink>
                                 <NavLink
+                                    :href="route('admin.sites.index')"
+                                    :active="route().current('admin.sites.*') || route().current('admin.floor-plan.*')"
+                                >
+                                    Sites & Plans
+                                </NavLink>
+                                <NavLink
                                     :href="route('admin.revenue-management.index')"
                                     :active="route().current('admin.revenue-management.*')"
                                 >
@@ -148,6 +154,12 @@ const showingNavigationDropdown = ref(false);
                             :active="route().current('dashboard')"
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('admin.sites.index')"
+                            :active="route().current('admin.sites.*') || route().current('admin.floor-plan.*')"
+                        >
+                            Sites & Plans
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             :href="route('admin.revenue-management.index')"

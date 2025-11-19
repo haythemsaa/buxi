@@ -41,6 +41,9 @@ require __DIR__.'/customer.php';
 // Admin Revenue Management Routes
 require __DIR__.'/admin_revenue.php';
 
+// Admin Infrastructure Management Routes (Sites, Buildings, Floors, Boxes, Floor Plans)
+require __DIR__.'/admin_infrastructure.php';
+
 // Webhook Routes (CSRF excluded in bootstrap/app.php)
 Route::post('/webhooks/stripe', [WebhookController::class, 'stripe'])->name('webhooks.stripe');
 Route::post('/webhooks/paypal', [WebhookController::class, 'paypal'])->name('webhooks.paypal');
