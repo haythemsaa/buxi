@@ -468,9 +468,11 @@ Plan d'action concret pour les 6-7 prochaines semaines.
 - `postman/README.md` - Guide collection Postman
 
 ### Stratégie & Roadmap
-- `COMPETITIVE_ANALYSIS.md` - Analyse concurrentielle détaillée
-- `ROADMAP.md` - Plan de développement 2025
-- `QUICK_WINS.md` - Actions immédiates prioritaires
+- `COMPETITIVE_ANALYSIS.md` - Analyse concurrentielle détaillée (7 concurrents, 10 catégories)
+- `ROADMAP.md` - Plan de développement 2025 (3 phases, 12 features, budget 126-132k€)
+- `QUICK_WINS.md` - Actions immédiates prioritaires (6-7 semaines, ROI +51k€/an)
+- `IMPLEMENTATION_GUIDE.md` - Guide technique d'implémentation avec templates
+- `STATUS.md` - État actuel du projet (35% Phase 1 complété)
 
 ---
 
