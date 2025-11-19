@@ -88,3 +88,16 @@ Schedule::command('contracts:send-renewal-reminders')
     ->onFailure(function () {
         \Log::error('Contract renewal reminders sending failed');
     });
+
+// Mettre à jour les prix dynamiques quotidiennement à 2h30
+Schedule::command('pricing:update-all')
+    ->dailyAt('02:30')
+    ->timezone('Europe/Paris')
+    ->description('Mettre à jour automatiquement les prix des boxes selon les règles de pricing dynamique')
+    ->withoutOverlapping()
+    ->onSuccess(function () {
+        \Log::info('Dynamic pricing updated successfully');
+    })
+    ->onFailure(function () {
+        \Log::error('Dynamic pricing update failed');
+    });
