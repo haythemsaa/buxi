@@ -19,6 +19,7 @@ Application SaaS complète pour la gestion de sites de self-stockage en France, 
 - [Tests](#-tests)
 - [Déploiement](#-déploiement)
 - [Architecture](#-architecture)
+- [Roadmap & Évolutions](#-roadmap--évolutions)
 
 ---
 
@@ -399,11 +400,77 @@ resources/js/Pages/        # 32 vues
 
 ---
 
+## 🗺️ Roadmap & Évolutions
+
+### 📊 Analyse Concurrentielle
+Étude complète du marché et identification des opportunités d'amélioration.
+
+👉 **Voir [COMPETITIVE_ANALYSIS.md](COMPETITIVE_ANALYSIS.md)**
+
+**Contenu** :
+- Analyse des 7 principaux concurrents (SiteLink, Storable Edge, Storeganise, etc.)
+- Comparaison détaillée des fonctionnalités par catégorie
+- Identification des gaps critiques dans Boxibox
+- Recommandations prioritaires avec ROI estimé
+
+**Highlights** :
+- 🔴 **Pricing dynamique IA** : +10-20% revenus potentiels
+- 🔴 **Smart locks** : -40% coûts staff
+- 🟠 **CRM automation** : +15-25% conversions
+- 🟠 **Analytics avancés** : Décisions data-driven
+
+### 🚀 Roadmap 2025
+Plan de développement produit détaillé sur 4 trimestres.
+
+👉 **Voir [ROADMAP.md](ROADMAP.md)**
+
+**Timeline** :
+- **Q1 2025** : Quick Wins & Revenue Boost (+20-30% revenus)
+- **Q2 2025** : Automation & Smart Access (-40% coûts)
+- **Q3 2025** : Mobile Native & Predictive IA
+- **Q4 2025** : Premium Features & Scale
+
+**Budget estimé** : 126-132k€
+**ROI attendu Année 1** : +300-500k€ (pour 500 boxes)
+
+### ⚡ Quick Wins - Actions Immédiates
+Plan d'action concret pour les 6-7 prochaines semaines.
+
+👉 **Voir [QUICK_WINS.md](QUICK_WINS.md)**
+
+**4 Priorités** :
+1. **Revenue Management Dynamique** (2 sem) - +10-20% revenus
+2. **Stripe + PayPal Integration** (1 sem) - +30% conversions
+3. **Portail Client Self-Service** (2 sem) - -50% support
+4. **Analytics & Dashboards KPIs** (1.5 sem) - Data-driven decisions
+
+**Investissement** : 12-18k€
+**Gain Année 1** : +51k€
+**Payback** : < 4 mois
+
+### 🎯 Vision 2025
+**Devenir la référence SaaS self-stockage en Europe francophone**
+
+- 💰 +30% revenus par box vs marché
+- ⚡ 100% automation (location sans contact)
+- 📱 Mobile-first experience
+- 🤖 IA pour pricing & support
+- 🌍 Expansion internationale
+
+---
+
 ## 📚 Documentation
 
-- `API_MOBILE.md` - Documentation API
-- `DEPLOYMENT.md` - Guide déploiement
-- `ANALYSE_CONCURRENTS.md` - Analyse marché
+### Documentation Technique
+- `API_MOBILE.md` - Documentation API mobile complète
+- `INTEGRATION.md` - Guide d'intégration avec exemples (React, Vue, Swift, Kotlin)
+- `DEPLOYMENT.md` - Guide de déploiement production
+- `postman/README.md` - Guide collection Postman
+
+### Stratégie & Roadmap
+- `COMPETITIVE_ANALYSIS.md` - Analyse concurrentielle détaillée
+- `ROADMAP.md` - Plan de développement 2025
+- `QUICK_WINS.md` - Actions immédiates prioritaires
 
 ---
 
