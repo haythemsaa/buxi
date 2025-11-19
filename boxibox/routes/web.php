@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\WebhookController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -39,5 +40,9 @@ require __DIR__.'/customer.php';
 
 // Admin Revenue Management Routes
 require __DIR__.'/admin_revenue.php';
+
+// Webhook Routes (CSRF excluded in bootstrap/app.php)
+Route::post('/webhooks/stripe', [WebhookController::class, 'stripe'])->name('webhooks.stripe');
+Route::post('/webhooks/paypal', [WebhookController::class, 'paypal'])->name('webhooks.paypal');
 
 require __DIR__.'/auth.php';
